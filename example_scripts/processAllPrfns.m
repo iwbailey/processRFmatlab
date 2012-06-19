@@ -1,16 +1,26 @@
 function processAllPrfns
 %
 % Script that processes all Prfns for the example data
-format compact;
+%
 
-% add programs used to your path
-addpath ../signalprocessing/
-addpath ../inout/
-addpath ../getinfo/
-addpath ../plotting/
-addpath ../deconvolution/
+%-- processAllPrfns.m ---
+%
+%  Filename: processAllPrfns.m
+%  Description: Example processing P receiver functions
+%  Author: Iain W. Bailey
+%  Maintainer: Iain W. Bailey
+%  Created: Mon Jun 18 21:48:58 2012 (-0400)
+%  Version: 1
+%  Last-Updated: Mon Jun 18 21:51:52 2012 (-0400)
+%            By: Iain W. Bailey
+%      Update #: 8
+%
+%-- Change Log:
+% Checked it works on June 18th 2012
+%
+%-- Code:
 
-% parameters for processing.
+%% Set parameters for processing.
 opt.MINZ = 1; % min eqk depth
 opt.MAXZ = 600; % max eqk depth
 opt.DELMIN = 30; % min eqk distance
@@ -34,10 +44,12 @@ rfOpt.WLEVEL = 1e-2; % water level for rfn processing
 rfOpt.ITERMAX = 200; %  max number of iterations in deconvolution
 rfOpt.MINDERR = 1e-5; % min allowed change in RF fit for deconvolution
 
-isCheck = false; % do everything auto
-isPlot = false; % plot during rfn computing
+isCheck = true; % Flag for whether or not to do everything automatically
+isPlot = true; % plot during rfn computing
 isTRF = true; % also compute Transverse Rfs
 isVb = true; % verbose output
+
+%% Set input and output directories
 
 % set the directory containing all event data in sub directories
 basedir='./test_data/seismograms/'
@@ -46,21 +58,21 @@ basedir='./test_data/seismograms/'
 odir = './prfns/';
 if( exist( odir , 'dir') ~= 7 ) unix( ['mkdir ', odir] ); end
 
-% get the filenames for each event station pair three component files
+%% Get the filenames for each event station pair three component files
 enzfiles = getEvStaFilenames( basedir , 'BHE', 'BHN', 'BHZ');
 
 % number of files
 nf = length(enzfiles);
 fprintf('Number of station-receiver pairs: %i\n', nf );
 
-% go through each file
+%% Loop through each set of 3 components
 for i =1:nf,
 %for i =1:1,
 
   % get the prefix of the file name
   fprintf('\n%s\n',enzfiles(i).name3)
 
-  % Read the data
+  %% Read the data
   try
     [eseis, nseis, zseis, hdr] = read3seis(enzfiles(i).name1, ...
 					   enzfiles(i).name2, ...
@@ -70,7 +82,7 @@ for i =1:nf,
     continue;
   end
 
-  % check depth units
+  %% check depth units
   hdr.event.evdp = checkDepthUnits( hdr.event.evdp, 'km');
 
   % check conditions
@@ -84,12 +96,12 @@ for i =1:nf,
   end
 
 
-  % make the water level rfn, r over z
+  %% Make the water level rfn, r over z
   if( isVb ), fprintf('Making Rfn water level...\n'); end
   [rftime, rfseis, rfhdr] = processRFwater(rseis, zseis, hdr, ...
 					 rfOpt , false);
 
-  % plot receiver functions
+  %% Plot and output receiver functions
   if( isPlot ),
     clf;
     p1 = plot( rftime, rfseis, '-b', 'linewidth', 2 ); hold on;
@@ -103,7 +115,7 @@ for i =1:nf,
   writeSAC( ofname, rfhdr, rfseis );
   fprintf('Written to %s\n',ofname)
 
-  % make the iterative rfn
+  %% Make the iterative rfn
   if( isVb ), fprintf('Making Rfn iterative...\n'); end
   [rftime, rfseis, rfhdr] = processRFiter(rseis, zseis, hdr, rfOpt , false);
 
@@ -148,4 +160,4 @@ ofname = [ staDIR, filename ];
 % combine
 return
 
-% ----------------------------------------------------------------------
+%-- processAllPrfns.m ends here

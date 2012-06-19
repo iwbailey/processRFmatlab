@@ -1,27 +1,19 @@
 function plotDepthPRfn
 
-clear;
-format compact;
-clf;
-
-addpath ../ioFunctions/
-addpath ../plotFunctions/
-addpath ../depthFunctions/
-
 % read a receiver function, plot the depth map
 
 % define parameters
 MAXZ = 400; % max depth in km
 NZ = 401; % number of depth points to plot
-ISPRF = true; % look at P Rfns 
+ISPRF = true; % look at P Rfns
 
 % load a velocity model
-vmod = '../velmodels1D/TNA.vsmod';
+vmod = 'TNA.vsmod';
 [hdr, x]=hdrload(vmod);
 z = x(:,1);
 vs = x(:,2);
 
-% compute vp 
+% compute vp
 vp = 1.8.*vs;
 
 % get reg vel model
@@ -34,14 +26,14 @@ files=dir( [DIR,'/',dirlist(1).name,'/*PRF.sac'] );
 filename=[DIR, dirlist(1).name, '/',files(1).name];
 disp(filename)
 
-try 
-  pRfn = readRFsacfile(filename);
+try
+  [t,prf,SAChdr] = sac2mat(filename)
 catch ME
   error(ME.message)
 end
 
 % check the slowness units
-if pRfn.rayp > 1 , 
+if pRfn.rayp > 1 ,
   fprintf( 'Changing slowness from %f s/rad to %f s/km\n' , ...
 	   [ pRfn.rayp, pRfn.rayp/6371] );
   pRfn.rayp = pRfn.rayp/6371;
