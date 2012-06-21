@@ -20,6 +20,20 @@ are useful so I'm happy to hear if you have any comments or questions.
 iainbailey@gmail.com
 
 
+How to use:
+-----------
+
+The functions are in separate directories based on their general class
+of function.  You will need them in your path to use them. Modify the
+script processRFmatlab_startup.m then run it before using the
+functions or change your own startup.m file if you want to do this
+automatically.
+
+
 Summary of Directories:
 -----------------------
 
+example_scripts/
+
+> Here you find some simple examples and example real world data that
+use some of the functions.
