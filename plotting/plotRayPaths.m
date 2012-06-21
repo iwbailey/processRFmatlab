@@ -1,5 +1,6 @@
 function plotRayPaths( PP, REGZ, REGVP , REGVS )
-
+%PLOTRAYPATHS plots lines for the P and S wave ray paths station-side
+%
 % plotRayPaths( PP, REGZ, REGVP , REGVS )
 %
 % For a ray parameter and a velocity model compute the P and S ray path
@@ -12,9 +13,12 @@ function plotRayPaths( PP, REGZ, REGVP , REGVS )
 % REGVS = corresponding vs of reg spaced vel model (km/s)
 %
 
+% Change log:
+% June 19th 2012: adjusted so that array shape is preserved
+
 % get associated vertical slowness
-qb = sqrt(1./REGVS.^2 - PP^2);
-qa = sqrt(1./REGVP.^2 - PP^2);
+qb = vslow( REGVS(:), PP );
+qa = vslow( REGVP(:), PP );
 
 % compute horizontal travel for each 
 dz = REGZ(2) - REGZ(1); % distance of layers
@@ -26,7 +30,7 @@ dx = PP * dz ./ qa;
 xp = [ 0 ; cumsum(dx) ];
 
 % depth of interfaces
-zintf = [ 0 ; REGZ + 0.5*dz ];
+zintf = [ 0 ; REGZ(:) + 0.5*dz ];
 
 % Make Figure 
 clf;

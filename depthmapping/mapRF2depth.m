@@ -1,4 +1,4 @@
-function [z, rfout] = mapRF2depth( TIME, RF, PP, REGZ, REGVP, REGVS, ...
+function rfout = mapRF2depth( TIME, RF, PP, REGZ, REGVP, REGVS, ...
 				   ISPRF )
 
 % 
@@ -40,14 +40,14 @@ function [z, rfout] = mapRF2depth( TIME, RF, PP, REGZ, REGVP, REGVS, ...
 %-- Code:
 
 % get associated vertical slowness
-qb = sqrt(1./REGVS.^2 - PP^2);
-qa = sqrt(1./REGVP.^2 - PP^2);
+qb = vslow( REGVS(:), PP );
+qa = vslow( REGVP(:), PP );
 
 % layer thickness
-dz=REGZ(2)-REGZ(1);
+dz=REGZ(2)-REGZ(1)';
 
-% get the depths
-z = [0.0; REGZ+0.5*dz];
+% % get the depths
+% z = [0.0; REGZ(:)+0.5*dz];
 
 %vsz = vs.^2 .* qb; % vertical vel ??
 %vpz = vp.^2 .* qa; 
@@ -61,7 +61,7 @@ if( ISPRF ),
   %dt = dz./(vsz) - dz./(vpz) ;
   dt = dz*(qb - qa) ;
   
-  t = [0; cumsum(dt)];
+  t = cumsum(dt);
 
   % correct for evernecent waves
   t( imag(t)~=0 ) = Inf;
@@ -70,14 +70,14 @@ else
   %dt = -(dz./(vsz) - dz./(vpz)) ;
   dt = -dz*(qb - qa);
 
-  t = [0; cumsum(dt)];
+  t = cumsum(dt);
 
   % correct for evernecent waves
   t( imag(t)~=0 ) = Inf;
 end
 
 % get the values of the receiver function at these times
-try,
+try
   rfout = interp1( TIME, RF, t , 'linear' );
 catch ME
   disp( 'problem with interpolation of depth mapped rf' )

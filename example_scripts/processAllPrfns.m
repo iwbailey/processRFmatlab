@@ -44,9 +44,7 @@ rfOpt.WLEVEL = 1e-2; % water level for rfn processing
 rfOpt.ITERMAX = 200; %  max number of iterations in deconvolution
 rfOpt.MINDERR = 1e-5; % min allowed change in RF fit for deconvolution
 
-isCheck = true; % Flag for whether or not to do everything automatically
 isPlot = true; % plot during rfn computing
-isTRF = true; % also compute Transverse Rfs
 isVb = true; % verbose output
 
 %% Set input and output directories
@@ -56,10 +54,10 @@ basedir='./test_data/seismograms/'
 
 % base directory for output
 odir = './prfns/';
-if( exist( odir , 'dir') ~= 7 ) unix( ['mkdir ', odir] ); end
+if( ~exist( odir , 'dir') ), mkdir( odir ); end
 
 %% Get the filenames for each event station pair three component files
-enzfiles = getEvStaFilenames( basedir , 'BHE', 'BHN', 'BHZ');
+enzfiles = getThreeCompFilenames( basedir , 'BHE', 'BHN', 'BHZ');
 
 % number of files
 nf = length(enzfiles);

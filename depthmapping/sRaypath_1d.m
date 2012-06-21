@@ -1,4 +1,7 @@
 function [epos, npos, zpos ] = sRaypath_1d( p, backaz, dz, zmax, z, vs )
+%SRAYPATH_1D computes the S ray path relative to station
+%
+% [epos, npos, zpos ] = sRaypath_1d( p, backaz, dz, zmax, z, vs )
 
  
 %- Code:
@@ -14,8 +17,7 @@ zpos = (0.0:dz:zmax)';
 nz = numel(zpos);
 
 % deal with discontinuities in the vel model
-idisc = find( z(1:end-1) == z(2:end) );
-z(idisc) = z(idisc) - EPS;
+z(diff(z)==0) = z(diff(z)==0) - EPS;
 
 % interpolate the vel model between each layer
 vs = interp1( z, vs, zpos(1:end-1)+0.5*dz, 'linear','extrap');  

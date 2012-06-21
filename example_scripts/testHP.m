@@ -8,13 +8,8 @@ clear;
 format compact;
 clf;
 
-% Add paths... change these to reflect your computer
-addpath ../sigprocFunctions/
-addpath ../ioFunctions/
-addpath ../plotFunctions/
-addpath ../deconFunctions/
 
-% Different low passes to investigate
+% Different high passes to investigate
 FHP=[ 0.01, 0.02, 0.03, 0.04, 0.05]; 
 
 % fixed parameters for processing

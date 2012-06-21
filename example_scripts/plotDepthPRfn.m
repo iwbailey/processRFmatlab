@@ -1,30 +1,33 @@
-function plotDepthPRfn
+% function plotDepthPRfn
 
 % read a receiver function, plot the depth map
 
 % define parameters
 MAXZ = 400; % max depth in km
-NZ = 401; % number of depth points to plot
+DZ = 1;
 ISPRF = true; % look at P Rfns
+SUFFIX='PRF.sac';
 
 % load a velocity model
-vmod = 'TNA.vsmod';
-[hdr, x]=hdrload(vmod);
-z = x(:,1);
-vs = x(:,2);
+[z, vs] = tna();
 
 % compute vp
 vp = 1.8.*vs;
 
-% get reg vel model
-[regz, regVp, regVs] = regVelmodel(  NZ, MAXZ, z, vp, vs  );
+% Remove discontinuities for later interpolation
+z(diff(z)==0) = z(diff(z)==0) - 1e-8;
+
+% Get at regular intervals
+zReg = 0:DZ:MAXZ;
+vsReg = interp1( z, vs, zReg , 'linear');
+vpReg = interp1( z, vp, zReg , 'linear');
 
 % load a receiver function
-DIR='./prfns/';
-dirlist=dir([DIR,'/TA*']);
-files=dir( [DIR,'/',dirlist(1).name,'/*PRF.sac'] );
-filename=[DIR, dirlist(1).name, '/',files(1).name];
-disp(filename)
+DIR = 'prfns/prfns_iter_2.50';
+dirlist = dir(fullfile( DIR,'TA*'));
+files = dir( fullfile( DIR, dirlist(1).name, ['*',SUFFIX]) );
+filename = fullfile( DIR, dirlist(1).name, files(1).name );
+fprintf('filename: %s\n',filename)
 
 try
   [t,prf,SAChdr] = sac2mat(filename)
@@ -33,45 +36,47 @@ catch ME
 end
 
 % check the slowness units
-if pRfn.rayp > 1 ,
+rayp = SAChdr.user(1).data;
+if rayp > 1 ,
   fprintf( 'Changing slowness from %f s/rad to %f s/km\n' , ...
-	   [ pRfn.rayp, pRfn.rayp/6371] );
-  pRfn.rayp = pRfn.rayp/6371;
+	   [ rayp, rayp/6371] );
+  rayp = rayp/6371;
 end
 
-% plot the ray path
+%% plot the ray path
 figure(1);clf;
-plotRayPaths( pRfn.rayp, regz, regVp, regVs );
+plotRayPaths( rayp, zReg, vpReg, vsReg );
 
-% get the depth of the receiver function
-[ z, rf2 ] = mapRF2depth( pRfn.time, pRfn.seis, pRfn.rayp,...
-			  regz, regVp, regVs , ISPRF );
-
+%% get the depth of the receiver function
+rf2  = mapRF2depth( t, prf, rayp,...
+    zReg, vpReg, vsReg, ISPRF );
+ 
+%%
 figure(2); clf;
-subplot(1,2,1); plot(pRfn.seis,pRfn.time ); hold on;
+subplot(1,2,1); plot(prf,t ); hold on;
 set(gca, 'YDir', 'reverse');
 set(gca, 'XTick',[]);
 axis tight;
 ylabel('Time (s)')
 
-subplot(1,2,2); plot(rf2,z);
+subplot(1,2,2); plot(rf2,zReg);
 set(gca, 'YDir', 'reverse');
 axis tight;
 ylabel('Depth (km)');
 set(gca, 'XTick',[]);
 
-% get longitude and latitude
-[lon,lat,z] = sRayPath( pRfn.rayp, regz, regVs, ...
-		      pRfn.stlo, pRfn.stla, pRfn.baz );
+%% Get longitude and latitude
+[epos, npos, zpos ] = sRaypath_1d( rayp, SAChdr.evsta.baz, ...
+    diff(zReg(1:2)), MAXZ, zReg, vsReg );
 
-fprintf('Back azimuth: %f degrees\n', pRfn.baz );
+fprintf('Back azimuth: %f degrees\n', SAChdr.evsta.baz);
 
 % plot results
 figure(3); clf;
-plot3( lon+5*rf2, lat , z,'b'); hold on;
-plot3( pRfn.stlo, pRfn.stla, 0 , 'rv' , 'MarkerSize', 10, ...
+plot3( epos+5*rf2, npos , zpos,'b'); hold on;
+plot3( 0, 0, 0 , 'rv' , 'MarkerSize', 10, ...
        'MarkerFaceColor', 'r' );
 view(10,30);
-daspect( [ 1 1 10])
+daspect( [ 1 1 5])
 grid on;
 set(gca, 'ZDir', 'reverse');

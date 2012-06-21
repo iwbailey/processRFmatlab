@@ -12,9 +12,9 @@
 %  Author: Iain W. Bailey
 %  Created: Mon Jun 18 20:58:29 2012 (-0400)
 %  Version: 1
-%  Last-Updated: Mon Jun 18 21:36:25 2012 (-0400)
+%  Last-Updated: Tue Jun 19 21:21:45 2012 (-0400)
 %            By: Iain W. Bailey
-%      Update #: 29
+%      Update #: 31
 %
 %-- Change Log:
 %
@@ -34,7 +34,7 @@
 %
 % In my case...
 processRFmatlab_root=['/home/iwbailey/seismology/programs/' ...
-                    'processxRFmatlab'];
+                    'processRFmatlab'];
 
 
 % Check the directory exists
@@ -65,6 +65,7 @@ addpath(fullfile(processRFmatlab_root,'signalprocessing'));
 fprintf('Adding velocity models to path\n');
 addpath(fullfile(processRFmatlab_root,'velmodels1D'));
 
+% Clean up variables
 clear processRFmatlab_root;
 
 %  This program is free software; you can redistribute it and/or
