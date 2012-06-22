@@ -3,13 +3,6 @@ function processAllSrfns
 % Script that processes all Srfns for the example data
 format compact;
 
-% add programs used to your path
-addpath ../sigprocFunctions/
-addpath ../ioFunctions/
-addpath ../infoFunctions/
-addpath ../plotFunctions/
-addpath ../deconFunctions/
-
 % parameters for processing. 
 opt.MINZ = 1; % min eqk depth
 opt.MAXZ = 600; % max eqk depth
@@ -34,7 +27,7 @@ rfOpt.ITERMAX = 200; %  max number of iterations in deconvolution
 rfOpt.MINDERR = 1e-5; % min allowed change in RF fit for deconvolution
 rfOpt.MAXRMS = 0.3; % max accepted RMS from the deconvolution (both types)
 
-isCheck = false; % do everything auto
+isCheck = true; % do everything auto
 isPlot = false; % plot during rfn computing
 isTRF = false; % also compute Transverse Rfs
 isVb = true; % verbose output
@@ -52,10 +45,12 @@ basedir='./test_data/seismograms/'
 
 % base directory for output
 odir = './srfns/';
-if( exist( odir , 'dir') ~= 7 ) unix( ['mkdir ', odir] ); end
+if( exist( odir , 'dir') ~= 7 ),
+    mkdir(odir); 
+end
 
 % get the filenames for each event station pair three component files 
-enzfiles = getEvStaFilenames( basedir , 'BHE', 'BHN', 'BHZ');
+enzfiles = getThreeCompFilenames( basedir , 'BHE', 'BHN', 'BHZ');
 
 % number of files
 nf = length(enzfiles);
@@ -84,7 +79,7 @@ for i =1:nf,
   % check conditions
   if( checkConditions(hdr, opt) ),
     % process and rotate
-    try,
+    try
       [zseis, rseis, tseis, hdr] = processENZseis( eseis, nseis, zseis, ...
 						   hdr, opt, isVb, ...
 						   isPlot );

@@ -11,13 +11,8 @@ dbaz = 90; % azimuth bin width ( degrees )
 dp = 0.005; % slowness bin width (s/km)
 mint=0; maxt=40; % min and max times to plot
 
-% change these paths to reflect your own file system
-addpath ~/seismology/programs/processRFmatlab/ioFunctions/
-addpath ~/seismology/programs/processRFmatlab/sigprocFunctions/
-addpath ~/seismology/programs/processRFmatlab/plotFunctions/
-
 % get the file names 
-[files, nrf] = getFilenames( pdir, ['*',suffix] );
+[files, ~] = getFilenames( pdir, suffix );
 
 % Read in all files
 [rflist, stIdx, nsta] = getSeisList( files );
@@ -41,7 +36,7 @@ for ista = 1:nsta,
   [rayp, backaz] = plotSlowBaz( rflist(idx), stnm, isRad ,'.k');
 
   % get the stacks
-  [time, pmid, bazmid, seiss, stds] = ...
+  [time, pmid, bazmid, seiss, ~] = ...
       stack_pBaz( {rflist(idx).t}, {rflist(idx).seis}, rayp, backaz, ...
 		  dp, dbaz, 'phase');
 

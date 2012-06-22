@@ -5,36 +5,26 @@ function plotGatherDepthStacks
 
 pdir='./prfns/prfns_water_2.50/'; % directory containing all p receiver functions
 psuffix='PRF.sac'; % suffix for files to stack
-isRad = true; % true = the slowness in the header is in s/rad
 
 dbaz = 5;
 dp = 0.005;
-mint=-30;
-maxt=5;
 dz = 1;
 maxz = 100;
 maxxy = 150;
 
-% change these paths to reflect your own file system
-addpath ~/seismology/programs/processRFmatlab/ioFunctions/
-addpath ~/seismology/programs/processRFmatlab/sigprocFunctions/
-addpath ~/seismology/programs/processRFmatlab/plotFunctions/
-addpath ~/seismology/programs/processRFmatlab/velmodels1D/
-addpath ~/seismology/programs/processRFmatlab/depthFunctions/
+%% get the file names 
+[pfiles, ~] = getFilenames( pdir, psuffix );
 
-% get the file names 
-[pfiles, nprf] = getFilenames( pdir, ['*',psuffix] );
-
-% use the AK135 continental model
+%% use the AK135 continental model
 [vmod.z, ~, vmod.vp, vmod.vs, ~, ~ ] = ak135( 'cont' );
 
-% Read in all files
+%% Read in all files
 [rflist, stIdx, nsta] = getSeisList( pfiles );
 
 fprintf('Number of Rfns: %i\n', numel(rflist))
 fprintf('Number of Stations: %i\n', nsta)
 
-% Loop through the stations
+%% Loop through the stations
 %for ista = 1:1,
 for ista = 1:nsta,
 
