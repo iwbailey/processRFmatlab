@@ -61,7 +61,7 @@ if( isPlot ),
 end
 
 % chop around the specified arrival
-tarr = getarrtime( opt.PHASENM, atimes, labels );
+tarr = getArrTime( opt.PHASENM, atimes, labels );
 
 if( isVb ), 
   fprintf('\t\tAdjust time: %f -- %f\n',[ tarr-opt.TBEFORE, tarr+opt.TAFTER]); 
@@ -145,40 +145,40 @@ tseis = trzseis(:,1);
 
 return
 
+% %---------------------------------------------------------
+% function tarr = getarrtime( arrname, times, labels )
+% %
+% % get the time of an arrival with label arrname from the arrival times and label arrays
+% %
+% tarr = NaN;
+% 
+% for i = 1:length( times ),
+%   % match the correct label 
+%   if(strcmp( strtrim(labels(i,:)), arrname) == 1 ),
+%     % set to corresponding time
+%     tarr = times(i);
+%   end
+% end
+% 
+% % Check if found
+% if( isnan( tarr ) ),
+%   for i = 1:length( times ),
+%     disp( labels(i,:) )
+%   end
+%   error( ['ERROR: time of ',arrname,' arrival not defined'] );
+% end
+% 
+% return
+
 %---------------------------------------------------------
-function tarr = getarrtime( arrname, times, labels )
-%
-% get the time of an arrival with label arrname from the arrival times and label arrays
-%
-tarr = NaN;
-
-for i = 1:length( times ),
-  % match the correct label 
-  if(strcmp( strtrim(labels(i,:)), arrname) == 1 ),
-    % set to corresponding time
-    tarr = times(i);
-  end
-end
-
-% Check if found
-if( isnan( tarr ) ),
-  for i = 1:length( times ),
-    disp( labels(i,:) )
-  end
-  error( ['ERROR: time of ',arrtime,' arrival not defined'] );
-end
-
-return
-
-%---------------------------------------------------------
-function plims = comparePlots( t, enzseis, plims, clabs)
+function plims = comparePlots( t, enzseis, plims )
 
 % overlay current seismogram on existing plot, pause, then clear and start again with
 % working seismograms
 plot3seis(t, enzseis(:,1), t, enzseis(:,2), t, enzseis(:,3), ...
 	  struct( 'clabs', ['E';'N';'Z'] , 'ltype', '-r', 'lims', plims ) ); 
 
-tmp = input('prompt ');  
+[~] = input('prompt ');  
 
 clf;  
 plims = plot3seis(t, enzseis(:,1), t, enzseis(:,2), t, enzseis(:,3), ...

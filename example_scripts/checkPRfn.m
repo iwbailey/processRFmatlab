@@ -26,8 +26,16 @@ function checkPRfn
 
 
 DIR = fullfile('prfns','prfns_iter_2.50'); % directory for in/output data
-fprintf(['Automatically checking receiver function quality in directory ' ...
-         '%s\n'], DIR);
+
+isAuto = false;
+
+if( isAuto ),
+    fprintf(['Automatically checking receiver function quality in directory ' ...
+        '%s\n'], DIR);
+else
+    fprintf(['Manually checking receiver function quality in directory ' ...
+        '%s\n'], DIR);
+end
 
 % make a log of all the outputs
 logfile = fullfile( DIR,'prf_check.log' );
@@ -46,12 +54,6 @@ MAXPOWT = 0.004 % maximum power of transverse receiver function
 STATION_PREFIX='TA';
 PSUFFIX='PRF.sac';
 TSUFFIX='TRF.sac';
-
-isCheck=1;  % manually check
-isCheck=0; % decide automatically based on above criteria
-
-%isPause=1; % pause during auto plot so we can see
-isPause=0;  % don't pause to process faster
 
 % directories for unwanted RFs
 REJDIR = fullfile( DIR, 'auto_rejected/');
@@ -78,7 +80,7 @@ for di = 1:numel(dirlist),
     fprintf('Number of PRF files: %i\n', numel(files1));
     fprintf('Number of TRF files: %i\n', numel(files2));
 
-    % loop through files
+    % loop through files in directory
     for fi = 1:numel(files1),
 
         fprintf('File # = %i\n',fi);
@@ -86,68 +88,66 @@ for di = 1:numel(dirlist),
         % Open files
         try
             filename = fullfile( DIR, dirlist(di).name, files1(fi).name );
-            [t, pRfn, hdr] = sac2mat(filename)
+            [t, seis, hdr] = sac2mat(filename);
         catch ME
             error(ME.message)
             continue;
         end
 
-        % get the RMS from the deconvolution
-        rms = pRfn.rms;
+        % Flag for checking whether we keep the receiver function
+        isOk = true;
+        
+        % Get and check the RMS from the deconvolution
+        rms = hdr.user.data(7);
+        fprintf('\tDeconvolution RMS = %f\n',rms);
         if( rms > MAXRMS ),
-            fprintf('Rejected because RMS = %f indicating deconvolution didnt work\n',...
-                    rms )
-            isok=false;
+            fprintf( ['\tLarger than defined threshold, indicating ',...
+                'deconvolution didnt work\n'] );
+            isOk=false;            
+            if( isAuto ), fprintf('\t\tREJECTED\n'); end
+        else
+
         end
 
-        % get location of the maximum peak
-        [ a, idx, tmax ] = getAbsMaxSeisTime( pRfn.seis, pRfn.time );
+        % Get and check the maximum peak
+        [ a, ~, tmax ] = getAbsMaxSeisTime( seis, t );
+        fprintf('\tMax abs peak at t=%.3f\n',tmax);
         if( abs(tmax) > PSEARCH ),
-            fprintf('Rejected because time( Max spike )= %f, i.e., no p-wave signal\n', tmax )
-            isok=false;
-        elseif( pRfn.seis(idx) <= 0 )
-            fprintf('Rejected because spike at t=0 is <=0 ')
-            isok=false;
+            fprintf('\tGreater than threshold indicating no strong p-wave signal\n')
+            fprintf( 'Note this logic only works for R/Z receiver functions\n');
+            isOk=false;
+            if( isAuto ), fprintf('\t\tREJECTED\n'); end
         end
 
         % check size of maximum peak isn't too large
+        printf('\tMax amplitude = %f\n',a);
         if( a > 1 ),
-            fprintf('Rejected because Max spike > 1 \n' )
-            isok=false;
+            fprintf('\tGreater than 1, indicating deconvolution didn''t work\n');
+            isOk=false;
+            if( isAuto ), fprintf('\t\tREJECTED\n'); end            
         end
 
         % get size of second largest spike
         a2 = max( getAbsMaxSeisTime( pRfn.seis, pRfn.time , PSEARCH ), ...
-                  getAbsMaxSeisTime( pRfn.seis, pRfn.time , pRfn.time(1), -PSEARCH) );
-        if( abs(a2)/a > MAXSPIKE2 ),
-            fprintf(['Rejected because 2nd largest spike > %f x max spike', ...
-                     ' indicating another phase or noise is contaminating the signal\n'], ...
+                  getAbsMaxSeisTime( pRfn.seis, pRfn.time , pRfn.time(1), ...
+                  -PSEARCH) );
+        if( isAuto && abs(a2)/a > MAXSPIKE2 ),
+            fprintf(['\tRejected because 2nd largest spike > %f x max spike', ...
+                ' indicating another phase or noise is contaminating the ',...
+                'signal\n'], ...
                     MAXSPIKE2 )
-            isok=false;
+            isOk=false;
+        else
+            fprintf('\tSize of the second largest spike: %f\n',a2)
         end
 
-        return
-        if( fi <= numel(files2) ),
-            try
-                filename2 = fullfile( DIR, dirlist(di).name ,files2(fi).name );
-                tRfn = sac2mat(filename2);
-            catch ME
-                fprintf('%s\n',ME.message)
-            end
-        end
+        % Plot the receiver function
+            clf;
+    p1 = plot( rftime, rfseis, '-b', 'linewidth', 2 ); hold on;
 
-        isok=true; % flag to keep Rfn
-        return
-        % get size of transverse component
-        powt = sum( tRfn.seis.^2 )/length(tRfn.seis);
-        if( powt > MAXPOWT )
-            fprintf(['Rejected because transverse RF is too large'])
-            isok=false;
-        end
+        if( ~isAuto ),
 
-        % decide whether to throw out or not
-        if( isCheck ),
-
+            % Review the plot
             % plot colour according to above criteria
             if( isok )
                 plot2Rfn( pRfn.time, pRfn.seis, tRfn.seis, ...
@@ -164,17 +164,17 @@ for di = 1:numel(dirlist),
             fprintf('p = %f\nbaz=%f\n',[pRfn.rayp,pRfn.baz])
 
             % get user input
-      display('Keep with L click.  Middle click to go back. Reject with R click...');
-      [xtmp,ytmp,keepoption] = ginput(1);
+            display('Keep with L click.  Middle click to go back. Reject with R click...');
+            [xtmp,ytmp,keepoption] = ginput(1);
+            
+            % message
+            if( keepoption == 1), disp('...keeping');
+            else disp('...rejecting');
+            end
 
-      % message
-      if( keepoption == 1), disp('...keeping');
-      else disp('...rejecting');
-      end
+        else
 
-    else
-
-      % keep or reject based on above criteria
+            % keep or reject based on above criteria
       if( isok  ),
 	plot2Rfn( pRfn.time, pRfn.seis, tRfn.seis, ...
 		  [pRfn.kstnm,' P'], 'T' )

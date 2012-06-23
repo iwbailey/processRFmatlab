@@ -33,8 +33,8 @@ opt.FLP = 2.0; % low pass
 opt.FHP = 0.02; % high pass
 opt.FORDER = 3; % order of filter
 opt.DTOUT = 0.1; % desired sample interval
-opt.MAGMIN = 5.5 % minimum magnitude to include
-opt.MAGMAX = 8.0 % minimum magnitude to include
+opt.MAGMIN = 5.5; % minimum magnitude to include
+opt.MAGMAX = 8.0; % minimum magnitude to include
 
 rfOpt.T0 = -10; % time limits for receiver function
 rfOpt.T1 = 90;
@@ -50,10 +50,10 @@ isVb = true; % verbose output
 %% Set input and output directories
 
 % set the directory containing all event data in sub directories
-basedir='./test_data/seismograms/'
+basedir=fullfile('test_data','seismograms');
 
 % base directory for output
-odir = './prfns/';
+odir = fullfile('prfns');
 if( ~exist( odir , 'dir') ), mkdir( odir ); end
 
 %% Get the filenames for each event station pair three component files
@@ -80,16 +80,28 @@ for i =1:nf,
     continue;
   end
 
+  %% Check arrival is there
+
+  % get arrival times 
+  [~, ~, atimes, labels] = getTimes( hdr );
+
+  if( isnan( getArrTime( opt.PHASENM, atimes, labels ) ) ),
+      fprintf('Time of %s arrival not found in header. \n...Skipping\n', ...
+          opt.PHASENM);
+      % Skip to next
+      continue;
+  end
+
   %% check depth units
   hdr.event.evdp = checkDepthUnits( hdr.event.evdp, 'km');
 
-  % check conditions
+  %% Check event conditions
   if( checkConditions(hdr, opt) ),
     % process and rotate
     [zseis, rseis, tseis, hdr] = processENZseis( eseis, nseis, zseis, ...
 						 hdr, opt, isVb, isPlot );
   else
-    fprintf('Didnt pass tests\n');
+    fprintf('Didnt pass depth/distance/magnitude tests\n');
     continue;
   end
 
@@ -106,8 +118,8 @@ for i =1:nf,
   end
 
   % make the output file
-  rfodir=[odir,sprintf('prfns_water_%0.2f/',rfOpt.F0)];
-  ofname = getOfname( rfodir, rfhdr )
+  rfodir = fullfile( odir, sprintf('prfns_water_%0.2f',rfOpt.F0) );
+  ofname = getOfname( rfodir, rfhdr );
 
   % write
   writeSAC( ofname, rfhdr, rfseis );
@@ -117,7 +129,7 @@ for i =1:nf,
   if( isVb ), fprintf('Making Rfn iterative...\n'); end
   [rftime, rfseis, rfhdr] = processRFiter(rseis, zseis, hdr, rfOpt , false);
 
-  rfodir=[odir,sprintf('prfns_iter_%0.2f/',rfOpt.F0)];
+  rfodir = fullfile( odir, sprintf('prfns_iter_%0.2f',rfOpt.F0) );
   ofname = getOfname( rfodir, rfhdr );
 
   % write
@@ -130,7 +142,7 @@ for i =1:nf,
     axis tight; xlabel('Time (s)'); ylabel('Amplitude (/s)');
     legend([p1,p2], 'water level', 'iterative')
 
-    tmp = input('prompt');
+    [~] = input('prompt');
   end
 end
 
@@ -140,12 +152,15 @@ function ofname = getOfname( rfodir, rfhdr )
 %
 
 % check the output directory exists
-if( exist( rfodir , 'dir') ~= 7 ) unix( ['mkdir ', rfodir] ); end
+if( ~exist( rfodir , 'dir') ),
+    mkdir(rfodir); 
+end
 
 % make the station specific directory
 staDIR = sprintf('%s_%s/',strtrim(rfhdr.station.knetwk),strtrim(rfhdr.station.kstnm) );
-staDIR = [rfodir,staDIR];
-if( exist( staDIR , 'dir') ~= 7 ) unix( ['mkdir ',staDIR] ); end
+staDIR = fullfile(rfodir,staDIR);
+if( ~exist( staDIR , 'dir') ),
+    mkdir( staDIR ); end
 
 % make the station/event specific rfn
 filename = sprintf('%04i_%03i_%02i%02i_%s_%s.PRF.sac', rfhdr.event.nzyear, ...
@@ -153,7 +168,7 @@ filename = sprintf('%04i_%03i_%02i%02i_%s_%s.PRF.sac', rfhdr.event.nzyear, ...
 		   strtrim(rfhdr.station.knetwk), ...
 		   strtrim(rfhdr.station.kstnm) );
 
-ofname = [ staDIR, filename ];
+ofname = fullfile( staDIR, filename );
 
 % combine
 return

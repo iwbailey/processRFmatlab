@@ -6,18 +6,36 @@ MATLAB functions and scripts for working with receiver functions
 These are functions I wrote during my post doc at USC (2009-2011) to
 work with receiver function data.  It is not any formal program, but
 the codes are made available in case they might be useful for learning
-about or reproducing some results.
+about receiver functions or reproducing some results.
 
-The main idea has been to try and use as much of matlab's
-functionality as possible and not to rely on a single data structure
-or complicated dependencies.  The codes have undergone a number of
-changes as I have been learning about matlab, receiver functions and
-signal processing.  Hence, they may not work as expected.
+There are three main aims while writing
+
+(1) try and use as much of matlab's functionality as possible (e.g.,
+signal processing libraries)
+
+(2) try to allow independence of functions with few dependencies on
+other functions or specific data structures
+
+(3) Keep the input and output consistent with SAC file data structure
+since this is fairly standard
 
 I'm not working in this research area now, so I don't expect to use or
 modify these codes much.  Still I would like to maintain them if they
-are useful so I'm happy to hear if you have any comments or questions.
-iainbailey@gmail.com
+are useful so I'm happy to hear if you have any
+comments/questions/contributions.  iainbailey@gmail.com
+
+
+How to get the codes:
+---------------------
+
+1 - Learn about Git and how to use it on your operating system.
+
+2 - Download the Git repository for this code from github to a
+    directory on your computer.
+
+3 - If there turn out to be mistakes or changes, I will make changes
+    and upload them to Git, you can then update your local copy.  If
+    you want to have access to make changes yourself, let me know.
 
 
 How to use:

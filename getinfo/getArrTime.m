@@ -1,17 +1,20 @@
 function tarr = getArrTime( arrname, times, labels )
-
-% Get the time of an arrival with label arrname from the arrival times and label arrays
+% GETARRTIME finds the time corresponding to a specific phase label
 %
 % tarr = getarrtime( arrname, times, labels )
+%
+% Get the time of an arrival with label arrname from the arrival times and label
+% arrays 
 % 
 % IN: 
 % arrname = label of phase looking for (e.g., 'P')
-% times = array of all times to look through
-% labels = labels corresponding to times
+% times = numeric array of all times to look through
+% labels = vertical string array of labels for each of the times
 %
 % OUT:
 % tarr = time of desired arrival
 %
+
 tarr = NaN;
 
 for i = 1:length( times ),
@@ -24,10 +27,13 @@ end
 
 % Check if found
 if( isnan( tarr ) ),
+  fprintf( 'WARNING: time of %s arrival not defined\n', arrname );
+  fprintf('\t... Labels defined are\n')
   for i = 1:length( times ),
-    disp( labels(i,:) )
-  end
-  error( ['ERROR: time of ',arrname,' arrival not defined'] );
+      if( ~strcmp( labels(i,:), '-12345') ),
+          fprintf('\t\t%s\n', labels(i,:) );
+      end
+   end
 end
 
 return
