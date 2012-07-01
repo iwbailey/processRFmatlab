@@ -28,6 +28,8 @@ comments/questions/contributions.  iainbailey@gmail.com
 How to get the codes:
 ---------------------
 
+If you want to keep up to date ...
+
 1 - Learn about Git and how to use it on your operating system.
 
 2 - Download the Git repository for this code from github to a
@@ -37,6 +39,7 @@ How to get the codes:
     and upload them to Git, you can then update your local copy.  If
     you want to have access to make changes yourself, let me know.
 
+Otherwise just get the zip file above.
 
 How to use:
 -----------
@@ -48,10 +51,3 @@ functions or change your own startup.m file if you want to do this
 automatically.
 
 
-Summary of Directories:
------------------------
-
-example_scripts/
-
-> Here you find some simple examples and example real world data that
-use some of the functions.
