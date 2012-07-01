@@ -1,5 +1,5 @@
-function processAllSrfns(isPlot)
-% processAllSrfns(isPlot)
+function script01b_processSrfns(isPlot)
+% script01b_processSrfns(isPlot)
 %
 % Script that processes all Srfns for the example data
 %
@@ -57,7 +57,7 @@ taper=hann(2*taperlen);
 taper = taper(1:0.5*numel(taper));
 
 % set the directory containing all event data in sub directories
-basedir=fullfile('test_data','seismograms');
+basedir=fullfile('example_data','seismograms');
 
 % base directory for output
 odir = fullfile('srfns');

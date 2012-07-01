@@ -1,5 +1,5 @@
-function processAllPrfns(isPlot)
-%processAllPrfns(isPlot)
+function script01a_processPrfns(isPlot)
+%script01a_processPrfns(isPlot)
 %
 % Script that processes all Prfns for the example data set
 %
@@ -18,6 +18,9 @@ function processAllPrfns(isPlot)
 %      Update #: 8
 %
 %-- Change Log:
+% Mon Jun 18 2012: Changed function name, added command line option, changed
+% input data name
+%
 % Checked it works on June 18th 2012
 %
 %-- Code:
@@ -54,7 +57,7 @@ rfOpt.MINDERR = 1e-5; % min allowed change in RF fit for deconvolution
 %% Set input and output directories
 
 % set the directory containing all event data in sub directories
-basedir=fullfile('test_data','seismograms');
+basedir=fullfile('example_data','seismograms');
 
 % base directory for output
 odir = fullfile('prfns');
