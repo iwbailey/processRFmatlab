@@ -255,7 +255,7 @@ legend boxoff;
 subplot(4,1,4); plot(1:ntin,U,'-k'); hold on; plot(1:ntin,UP,'-r');
 legend('Numerator','Predicted Numerator');
 legend boxoff;
-tmp = input('prompt');
+input('Press a key to continue');
 
 return
 
@@ -266,7 +266,7 @@ plot( -maxabslag:1:maxabslag, RF ); hold on;
 plot( (-maxabslag+idx1-1):1:(-maxabslag+idx2-1), RF(idx1:idx2), '--r');
 
 axis tight;
-tmp = input('prompt');
+input('Press a key to continue');
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% makeRFitdecon.m ends here

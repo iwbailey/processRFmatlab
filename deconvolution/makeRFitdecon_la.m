@@ -18,7 +18,7 @@ function [RFI,RMS] = makeRFitdecon_la(UIN,WIN,DT,NT,TSHIFT,F0,ITMAX,MINDERR)
 % RMS = Root mean square error for predicting numerator after each iteration
 %
 
-disp(['Iterative Decon (Ligorria & Ammon):'])
+fprintf('Iterative Decon (Ligorria & Ammon):\n')
 
 % Initiate
 RMS = zeros(ITMAX,1); % RMS errors
@@ -52,7 +52,7 @@ it = 0;
 sumsq_i = 1;
 d_error = 100*powerU + MINDERR;
 maxlag = 0.5*nfft;
-disp(sprintf('\tMax Spike Display is %f', (maxlag)*DT))
+fprintf('\tMax Spike Display is %f', (maxlag)*DT );
 
 %clf;
 output = sprintf('File         Spike amplitude   Spike delay   Misfit   Improvement');
@@ -65,7 +65,7 @@ while( abs(d_error) > MINDERR  && it < ITMAX )
   RW= correl(R, W, nfft);
   RW = RW/sum(W.^2);
 
-  [m1,i1]=max( abs( RW(1:maxlag) ) );
+  [~,i1]=max( abs( RW(1:maxlag) ) );
   amp = RW(i1)/DT; % scale the max and get correct sign
 
   % compute predicted deconvolution
@@ -79,7 +79,7 @@ while( abs(d_error) > MINDERR  && it < ITMAX )
 %   subplot(3,1,1); plot(R,'-r'); hold on;
 %   subplot(3,1,2); plot(W,'-k'); hold on;
 %   subplot(3,1,3); plot(P,'-k'); hold on;% plot(i1,P(i1),'rx');
-%   tmp = input('prompt');
+%   tmp = input('Press a key to continue');
 
   % compute residual with filtered numerator
   R = U - P;
@@ -89,7 +89,7 @@ while( abs(d_error) > MINDERR  && it < ITMAX )
   
   sumsq_i = sumsq;  % store rms for computing difference in next
 
-  output = strvcat( output, ...
+  output = char( output, ...
 		    sprintf('%03i %24.9e %11.3f %9.2f %10.4f ',...
 			    [it, DT*amp, DT*(i1-1), 100*RMS(it), d_error]));
 end
@@ -109,8 +109,8 @@ RFI=P(1:NT);
 % output the rms values 
 RMS = RMS(1:it);
 
-disp(sprintf(['\t# iterations: ',num2str(it)]))
-disp(sprintf(['\tFinal RMS: ',num2str(RMS(it))]))
+fprintf('\t# iterations: %i\n', it );
+fprintf('\tFinal RMS: %g\n', RMS(it) );
 return
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

@@ -1,10 +1,13 @@
 function plotGatherDepthStacks
 
-% make plots of the receiver functions for each station
-% bin in slowness and back azimuth, then convert to depth
+% Use a 1-D velocity model to map receiver function amplitudes to depth
+% Choose the moho from 1-d plots, then plot path in 3d
 
-pdir='./prfns/prfns_water_2.50/'; % directory containing all p receiver functions
-psuffix='PRF.sac'; % suffix for files to stack
+% directory containing all p receiver functions
+pdir='./prfns/prfns_water_2.50/'; 
+
+% suffix for files to stack
+psuffix='PRF.sac'; 
 
 dbaz = 5;
 dp = 0.005;

@@ -1,7 +1,9 @@
-function processAllPrfns
+function processAllPrfns(isPlot)
+%processAllPrfns(isPlot)
 %
-% Script that processes all Prfns for the example data
+% Script that processes all Prfns for the example data set
 %
+% isPlot = true to plot and pause after each processing step, false for auto
 
 %-- processAllPrfns.m ---
 %
@@ -19,6 +21,10 @@ function processAllPrfns
 % Checked it works on June 18th 2012
 %
 %-- Code:
+if( nargin < 1 ),
+    isPlot = true; % plot during rfn computing
+end
+isVb = true; % verbose output
 
 %% Set parameters for processing.
 opt.MINZ = 1; % min eqk depth
@@ -44,8 +50,6 @@ rfOpt.WLEVEL = 1e-2; % water level for rfn processing
 rfOpt.ITERMAX = 200; %  max number of iterations in deconvolution
 rfOpt.MINDERR = 1e-5; % min allowed change in RF fit for deconvolution
 
-isPlot = true; % plot during rfn computing
-isVb = true; % verbose output
 
 %% Set input and output directories
 
@@ -142,7 +146,7 @@ for i =1:nf,
     axis tight; xlabel('Time (s)'); ylabel('Amplitude (/s)');
     legend([p1,p2], 'water level', 'iterative')
 
-    [~] = input('prompt');
+    [~] = input('Press a key to continue');
   end
 end
 

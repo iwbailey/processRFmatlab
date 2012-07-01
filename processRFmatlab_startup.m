@@ -40,7 +40,7 @@ processRFmatlab_root=['/home/iwbailey/seismology/programs/' ...
 % Check the directory exists
 if ~exist(processRFmatlab_root, 'dir'),
     error('You need to edit this script to point to your directory')
-    return
+    return;
 end
 
 % Now add the paths for all the functions individually

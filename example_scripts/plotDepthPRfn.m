@@ -30,7 +30,7 @@ filename = fullfile( DIR, dirlist(1).name, files(1).name );
 fprintf('filename: %s\n',filename)
 
 try
-  [t,prf,SAChdr] = sac2mat(filename)
+  [t,prf,SAChdr] = sac2mat(filename);
 catch ME
   error(ME.message)
 end

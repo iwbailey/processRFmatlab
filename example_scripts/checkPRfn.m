@@ -26,7 +26,9 @@ function checkPRfn
 
 
 DIR = fullfile('prfns','prfns_iter_2.50'); % directory for in/output data
-
+if( ~exist(DIR, 'dir')),
+    error('Directory: %s doesn''t exist.',DIR)
+end
 isAuto = false;
 
 if( isAuto ),
@@ -46,17 +48,17 @@ fprintf('Saving terminal output to %s\n', logfile)
 diary(logfile);
 
 % PARAMETERS
-MAXRMS = 0.3 % Don't allow any RMS values greater than this
-PSEARCH = 5 % Largest spike must be +ve within this many seconds of zero
-MAXSPIKE2 = 0.5 % 2nd max spike cannot be > this much times max spike
-MAXPOWT = 0.004 % maximum power of transverse receiver function
+MAXRMS = 0.3; % Don't allow any RMS values greater than this
+PSEARCH = 5; % Largest spike must be +ve within this many seconds of zero
+MAXSPIKE2 = 0.5; % 2nd max spike cannot be > this much times max spike
 
 STATION_PREFIX='TA';
 PSUFFIX='PRF.sac';
 TSUFFIX='TRF.sac';
+pausetime = 0.5;
 
 % directories for unwanted RFs
-REJDIR = fullfile( DIR, 'auto_rejected/');
+REJDIR = fullfile( DIR, 'rejected/');
 if( ~exist(REJDIR,'dir') ),
   mkdir(REJDIR);
 end
@@ -97,8 +99,11 @@ for di = 1:numel(dirlist),
         % Flag for checking whether we keep the receiver function
         isOk = true;
         
+        rayp = hdr.user(1).data;
+        baz = hdr.evsta.baz;
+        
         % Get and check the RMS from the deconvolution
-        rms = hdr.user.data(7);
+        rms = hdr.user(7).data;
         fprintf('\tDeconvolution RMS = %f\n',rms);
         if( rms > MAXRMS ),
             fprintf( ['\tLarger than defined threshold, indicating ',...
@@ -120,7 +125,7 @@ for di = 1:numel(dirlist),
         end
 
         % check size of maximum peak isn't too large
-        printf('\tMax amplitude = %f\n',a);
+        fprintf('\tMax amplitude = %f\n',a);
         if( a > 1 ),
             fprintf('\tGreater than 1, indicating deconvolution didn''t work\n');
             isOk=false;
@@ -128,96 +133,63 @@ for di = 1:numel(dirlist),
         end
 
         % get size of second largest spike
-        a2 = max( getAbsMaxSeisTime( pRfn.seis, pRfn.time , PSEARCH ), ...
-                  getAbsMaxSeisTime( pRfn.seis, pRfn.time , pRfn.time(1), ...
-                  -PSEARCH) );
-        if( isAuto && abs(a2)/a > MAXSPIKE2 ),
-            fprintf(['\tRejected because 2nd largest spike > %f x max spike', ...
-                ' indicating another phase or noise is contaminating the ',...
-                'signal\n'], ...
-                    MAXSPIKE2 )
+        a2 = max( getAbsMaxSeisTime( seis, t , PSEARCH ), ...
+            getAbsMaxSeisTime( seis, t , t(1), ...
+            -PSEARCH) );
+        fprintf('\tSize of the second largest spike: %f\n',a2)
+        if( abs(a2)/a > MAXSPIKE2 ),
+            fprintf(['\t2nd largest spike > %f x max spike ', ...
+                'indicating another phase or noise is contaminating the ',...
+                'signal\n'], MAXSPIKE2 )
             isOk=false;
-        else
-            fprintf('\tSize of the second largest spike: %f\n',a2)
+            if( isAuto ), fprintf('\t\tREJECTED'); end
         end
 
-        % Plot the receiver function
-            clf;
-    p1 = plot( rftime, rfseis, '-b', 'linewidth', 2 ); hold on;
 
         if( ~isAuto ),
-
-            % Review the plot
-            % plot colour according to above criteria
-            if( isok )
-                plot2Rfn( pRfn.time, pRfn.seis, tRfn.seis, ...
-                          [pRfn.kstnm,' P'], 'T' )
-            else
-                plot2Rfn( pRfn.time, pRfn.seis, tRfn.seis, ...
-                          [pRfn.kstnm,' P'], 'T' ,'-r', '-b' )
-            end
+            isOk = true;
+            
+            % Plot the receiver function
+            clf;
+            plot( t, seis, '-b', 'linewidth', 2 ); hold on;
 
             % alter axis dimensions to weed out excessive RFs
-            axis([ min(pRfn.time), max(pRfn.time), -0.3, 0.5 ])
+            axis([ min(t), max(t), -0.3, 1.0 ])
 
-            % display parameters to screen
-            fprintf('p = %f\nbaz=%f\n',[pRfn.rayp,pRfn.baz])
+            title(sprintf('p = %f / baz=%f\n', rayp, baz ))
 
             % get user input
-            display('Keep with L click.  Middle click to go back. Reject with R click...');
-            [xtmp,ytmp,keepoption] = ginput(1);
+            fprintf('Keep with L click. Reject with R click...\n');
+            [~,~,keepoption] = ginput(1);
             
-            % message
-            if( keepoption == 1), disp('...keeping');
-            else disp('...rejecting');
+            % process
+            if( keepoption == 3),
+                isOk = false;
             end
-
+        end
+        
+        if( isOk )
+            fprintf('keeping\n')
+            plot( t, seis, '-g', 'linewidth', 2 ); 
+            pause(pausetime);
         else
+            fprintf('rejecting\n')
+            plot( t, seis, '-r', 'linewidth', 2 ); 
+            pause(pausetime);
 
-            % keep or reject based on above criteria
-      if( isok  ),
-	plot2Rfn( pRfn.time, pRfn.seis, tRfn.seis, ...
-		  [pRfn.kstnm,' P'], 'T' )
-	keepoption = 1;
-      	disp('...keeping')
-	if( isPause ), pause(0.5); end
-      else
-	plot2Rfn( pRfn.time, pRfn.seis, tRfn.seis, ...
-		  [pRfn.kstnm,' P'], 'T' ,'-r', '-b' )
-	keepoption = 3;
-	disp('...rejecting');
-	if( isPause ), pause(0.5); end
-      end
-    end
+            % directory for rejected rfn depends on current directory
+            rejdir2 = fullfile( REJDIR,dirlist(di).name );
+            
+            % Make it if it doesn't exist
+            if( ~exist( rejdir2,'dir') ), mkdir(rejdir2); end
+            
+            % Move the files
+            movefile( filename, rejdir2 );
+            fprintf('Moved %s to %s\n',filename, rejdir2);
+        end
 
-    % move file out of directory, this won't always work
-    if( keepoption == 3 ),
-      REJDIR2 = [ REJDIR,'/',dirlist(di).name];
-      if( exist(REJDIR2,'dir') ~=7 ),
-	unix(['mkdir ',REJDIR2]);
-      end
-      unix(['mv ',filename,' ',REJDIR2]);
-      unix(['mv ',filename2,' ',REJDIR2]);
-     end
-
-    if( keepoption == 2 ),
-      disp('...Reversing')
-      fi = fi - 2
-      if( fi < 0 ),
-	di = di - 2
-	fi = length(files1) + fi
-	if( di < 1 ),
-	  di = 1
-	  fi = 0
-	end
-      end
-    end
-
-    fi=fi+1;
-
-  end % END file loop
-  di=di+1;
+    end % END file loop
 end % end directory loop
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%---------------------------------------------------------------------------
 %--- checkPRfn.m ends here

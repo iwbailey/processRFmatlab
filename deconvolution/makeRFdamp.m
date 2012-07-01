@@ -1,4 +1,4 @@
-function [RFt, rms, nwl] = makeRFdamp( UIN, WIN, TDEL, DT, NT, ...
+function [RFt, rms] = makeRFdamp( UIN, WIN, TDEL, DT, NT, ...
 				       DAMP, F0, VB)
 % Deconvolution using a constant damping factor
 %
@@ -107,8 +107,7 @@ end
 
 % if we want a unit amplitude gaussian filter apply the following
 if isUnitAmp,
-  gnorm = sum(gaussF)*delf*DT;
-  RFt = real(RFt)/gnorm;
+  RFt = real(RFt)/sum(gaussF)*delf*DT;
 end
 
 return 

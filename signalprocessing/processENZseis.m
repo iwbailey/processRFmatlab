@@ -35,7 +35,8 @@ function [zseis, rseis, tseis, hdr] = processENZseis(eseis,nseis,zseis,hdr,opt,i
 %---------------------------------------------------------
 %  
 %-- Change Log:
-%  Thu Sep  1 10:39:46 2011 (-0700): changed plotting call
+%  Sun Jul  3: Changed display when waiting for user input
+%  Thu Sep  1: changed plotting call
 %  
 %---------------------------------------------------------
 %  
@@ -51,13 +52,13 @@ if( size( zseis, 2 ) > size( zseis, 1 ) ), zseis = zseis'; end
 enzseis = [ eseis, nseis, zseis ];
 
 % get arrival times 
-[t, dt, atimes, labels] = getTimes( hdr );
+[t, ~, atimes, labels] = getTimes( hdr );
 
 if( isPlot ), 
   clf;
   plims = plot3seis(t, enzseis(:,1), t, enzseis(:,2), t, enzseis(:,3), ...
 		    struct( 'clabs', ['E';'N';'Z'] ) ); hold on;
-  tmp = input('prompt ');  
+  input('Press a key to continue ');  
 end
 
 % chop around the specified arrival
@@ -145,31 +146,6 @@ tseis = trzseis(:,1);
 
 return
 
-% %---------------------------------------------------------
-% function tarr = getarrtime( arrname, times, labels )
-% %
-% % get the time of an arrival with label arrname from the arrival times and label arrays
-% %
-% tarr = NaN;
-% 
-% for i = 1:length( times ),
-%   % match the correct label 
-%   if(strcmp( strtrim(labels(i,:)), arrname) == 1 ),
-%     % set to corresponding time
-%     tarr = times(i);
-%   end
-% end
-% 
-% % Check if found
-% if( isnan( tarr ) ),
-%   for i = 1:length( times ),
-%     disp( labels(i,:) )
-%   end
-%   error( ['ERROR: time of ',arrname,' arrival not defined'] );
-% end
-% 
-% return
-
 %---------------------------------------------------------
 function plims = comparePlots( t, enzseis, plims )
 
@@ -178,7 +154,7 @@ function plims = comparePlots( t, enzseis, plims )
 plot3seis(t, enzseis(:,1), t, enzseis(:,2), t, enzseis(:,3), ...
 	  struct( 'clabs', ['E';'N';'Z'] , 'ltype', '-r', 'lims', plims ) ); 
 
-[~] = input('prompt ');  
+[~] = input('Press a key to continue ');  
 
 clf;  
 plims = plot3seis(t, enzseis(:,1), t, enzseis(:,2), t, enzseis(:,3), ...

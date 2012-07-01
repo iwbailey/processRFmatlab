@@ -1,11 +1,13 @@
-function processAllSrfns
+function processAllSrfns(isPlot)
+% processAllSrfns(isPlot)
 %
 % Script that processes all Srfns for the example data
-format compact;
+%
+% isPlot = true to plot and pause after each processing step, false for auto
 
 %-- processAllSrfns.m ---
 %
-%  Filename: processAllPrfns.m
+%  Filename: processAllSrfns.m
 %  Description: Example processing P receiver functions
 %  Author: Iain W. Bailey
 %  Maintainer: Iain W. Bailey
@@ -19,6 +21,11 @@ format compact;
 % Checked it works on June 18th 2012
 %
 %-- Code:
+
+if( nargin < 1 ),
+    isPlot = true; % plot during rfn computing
+end
+isVb = true; % verbose output
 
 %% Set parameters for processing.
 opt.MINZ = 1; % min eqk depth
@@ -43,9 +50,6 @@ rfOpt.WLEVEL = 1e-2; % water level for rfn processing
 rfOpt.ITERMAX = 200; %  max number of iterations in deconvolution
 rfOpt.MINDERR = 1e-5; % min allowed change in RF fit for deconvolution
 
-isPlot = true; % plot during rfn computing
-isVb = true; % verbose output
-
 % make a taper for removing some of the signal
 phaseerr = 2; % number of seconds phase pick may be wrong
 taperlen = round(5.0/opt.DTOUT);
@@ -56,7 +60,7 @@ taper = taper(1:0.5*numel(taper));
 basedir=fullfile('test_data','seismograms');
 
 % base directory for output
-odir = fullfile('prfns');
+odir = fullfile('srfns');
 if( ~exist( odir , 'dir') ), mkdir( odir ); end
 
 %% Get the filenames for each event station pair three component files
@@ -151,7 +155,7 @@ for i =1:nf,
     axis tight; xlabel('Time (s)'); ylabel('Amplitude (/s)');
     legend([p1,p2], 'water level', 'iterative')
 
-    [~] = input('prompt');
+    [~] = input('Press a key to continue');
   end
 end
 
