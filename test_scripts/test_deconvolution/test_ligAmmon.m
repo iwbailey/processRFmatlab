@@ -1,10 +1,6 @@
 function test_ligAmmon
 %
 % Compare the output from fortran code and my matlab version
-format compact;
-
-addpath '../'  % decon functions
-addpath '../../ioFunctions/' % for file in 
 
 % read data
 [t,zseis,hdrZ]=sac2mat('test_data/lac_sp.z');

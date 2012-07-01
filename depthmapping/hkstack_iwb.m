@@ -1,4 +1,5 @@
 function [stack, stackvar] = hkstack_iwb(SEIS,T0,DT,P,H,KAPPA,VP)
+%[stack, stackvar] = hkstack_iwb(SEIS,T0,DT,P,H,KAPPA,VP)
 %
 % Stack the amplitudes of a set of receiver functions at predicted
 % times of a Ps conversion and the first two multiples for different
@@ -56,8 +57,6 @@ if( size( SEIS,2 ) ~= nrf ),
   end
 end
 
-nt = size( SEIS,1 ); % number of time samples
-
 % check the orientation of P
 if( size( P, 1 ) > size( P, 2) ), P = P.'; end
 P = sort(P);
@@ -98,7 +97,7 @@ for i=1:nrf,
     stack = stack + tstack; 
     stack2 = stack2 + tstack.^2; % store for variance
     
-    while i<nrf & P(i+1) == P(i), 
+    while i<nrf && P(i+1) == P(i), 
       % don't bother recalculating times for repeated values of slowness
       i = i+1;
       tstack(:,:,1) = am_cor(i).*reshape( SEIS( t1, i), nk, nh );

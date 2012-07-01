@@ -1,10 +1,7 @@
+function testCheckCond
 %
 % Test resampling on example data
 
-clear
-addpath ../  % add paths below
-addpath ../../ioFunctions
-addpath ../../plotFunctions
 
 % read in the data
 prefix='test_data/TA.Q20A'  % prefix of for 3 components to open
@@ -14,6 +11,8 @@ opt.MINZ = 10;
 opt.MAXZ = 600;
 opt.DELMIN = 30;
 opt.DELMAX = 95;
+opt.MAGMIN = 5.5;
+opt.MAGMAX = 8.5;
 
 disp('Options:')
 disp(opt)

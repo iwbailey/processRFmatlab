@@ -1,10 +1,6 @@
+function testTaper
 %
 % Test Taper on example data
-
-clear
-addpath ../  % add paths below
-addpath ../../ioFunctions
-addpath ../../plotFunctions
 
 % read in the data
 prefix='test_data/TA.Q20A'  % prefix of for 3 components to open

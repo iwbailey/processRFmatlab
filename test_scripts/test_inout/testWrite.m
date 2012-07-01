@@ -1,10 +1,6 @@
 function testWrite(ifile, ofile)
 % Script to test the reading and writing of sac data
 
-format compact
-addpath ../
-addpath ../../plotFunctions/
-
 % set default file names
 if( nargin < 2 ),
   ofile='TA.O23A.little.BHZ.v2'

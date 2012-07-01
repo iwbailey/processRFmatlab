@@ -1,10 +1,6 @@
+function testProcessENZ
 %
 % Test processing of three component data
-
-clear
-addpath ../  % add paths below
-addpath ../../ioFunctions
-addpath ../../plotFunctions
 
 % read in the data
 prefix='test_data/TA.Q20A'  % prefix of for 3 components to open
@@ -51,7 +47,6 @@ if( checkConditions(hdr, opt) ),
   processENZseis( eseis, nseis, zseis, hdr, opt, true, true );
 else
   fprintf('Didnt pass tests\n');
-  continue;
 end
 
 disp('...Done')

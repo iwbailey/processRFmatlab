@@ -2,14 +2,9 @@ function test_normalisation(isprompt)
 % test the deconvolution codes to see if the filter is returned by decvonvolving the rfn
 % from itself
 %
-format compact;
+
 if( nargin < 1 ), isprompt = false; end
   
-addpath '../'  % decon functions
-addpath '../../sigprocFunctions/'
-addpath '../../ioFunctions/'
-
-
 % read data
 [t,zseis,hdrZ]=sac2mat('test_data/lac_sp.z');
 [t,rseis,hdrR]=sac2mat('test_data/lac_sp.r');
@@ -61,24 +56,6 @@ end
 
 
 %--------------------------------------------------
-%-- Levander method
-disp('Levander method ')
-[rfi2, rms2] = makeRFitdecon_levander( rseis, zseis, ...
- 				       tdel, dt, nt, f0, ...
- 				       niter);
-
-[rfi2, rms2] = makeRFitdecon_levander( rfi2, rfi2, ...
- 				       tdel, dt, nt, f0, ...
- 				       niter);
-
-areaUnder = sum( rfi2 )*dt 
-h3 = plot(time,rfi2,'b'); hold on;
-if( isprompt ),
-  tmp=input('prompt after plotting Levander result.');
-end
-
-
-%--------------------------------------------------
 % Iain method
 minlag=0;
 maxlag=12.7;
@@ -106,22 +83,7 @@ end
 
 %--------------------------------------------------
 % Frequency domain
-disp('Levander freq domain method ')
 wlevel=1e-4;
-
-% levander method
-wvt = 0;%wavelet = 0 for Gaussian, 1 for Ricker wavelet
- 
-[rfi4,tmp] = makeRFwater_levander( rseis, zseis, -5, dt, nt, wlevel, f0, wvt);
-[rfi4,tmp] = makeRFwater_levander( rfi4, rfi4, -5, dt, nt, wlevel, f0, wvt);
-
-areaUnder = sum( rfi4 )*dt 
-h5 = plot(time,rfi4,'m'); hold on;
-
-if( isprompt ),
-  tmp=input('prompt after Levander result.');
-end
-
 
 %--------------------------------------------------
 % Ammon method
@@ -134,11 +96,9 @@ areaUnder = sum( rfi5 )*dt
 h6 = plot(time,rfi5,'--b','LineWidth',2); hold on;
 
 %--------------------------------------------------
-legend([ h1, h3, h4, h5 , h6 ], ...
+legend([ h1, h4, h6 ], ...
        'L&A - matlab',...
-       'Levander method',...
        'IWB - 1',...
-       'Levander Water Level method',...
        'Ammon Water Level method')
 
 axis tight

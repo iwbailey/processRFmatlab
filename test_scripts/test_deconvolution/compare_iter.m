@@ -2,13 +2,6 @@ function compare_iter
 % compare the three iterative deconvolution methods using the same example as given by
 % Ammon with his codes
 
-clear;
-format compact;
-
-addpath '../'  % decon functions
-addpath '../../sigprocFunctions/'
-addpath '../../ioFunctions/'
-
 % read data
 [t,zseis,hdrZ]=sac2mat('test_data/lac_sp.z');
 [t,rseis,hdrR]=sac2mat('test_data/lac_sp.r');
@@ -47,15 +40,6 @@ disp('Ligorria & Ammon Method...')
 clf;
 h1 = plot(time,rfi1,'k'); hold on;
 
-% ----------
-%-- Levander method
-disp('Levander Iterative Method...')
-[rfi2, rms2] = makeRFitdecon_levander( rseis, zseis, ...
- 				       tdel, dt, nt, f0, ...
- 				       niter);
-h3 = plot(time,rfi2,'b'); hold on;
-% tmp=input('prompt after plotting Levander result.');
-
 
 % ----------
 %%% Iain method
@@ -72,9 +56,8 @@ h4 = plot(time2,rfi3,'r'); hold on;
 
 
 % ----------
-legend([ h1, h3, h4 ], ...
+legend([ h1, h4 ], ...
        'L&A - matlab',...
-       'Levander method',...
        'IWB - 1')
 
 axis tight
@@ -83,17 +66,15 @@ xlabel('Time (s)')
 
 figure(2); clf;
 h1 = semilogy(rms1,'.k'); hold on;
-h2 = semilogy(rms2,'.b');
 h3 = semilogy(rms3,'.r');
 
-legend([ h1, h2, h3 ], 'L&A - matlab','Levander','IWB')
+legend([ h1, h3 ], 'L&A - matlab','IWB')
 xlabel('Iteration Number')
 ylabel('Scaled Sum Sq Error')
 
 % Display the RMS values
 fprintf('\nFinished\n')
 fprintf('RMS for Ligorria/Ammon method:\t\t %f\n', rms1(end))
-fprintf('RMS for Levander Iterative method:\t %f\n', rms2(end))
 fprintf('RMS for IWB Iterative method:\t\t %f\n', rms3(end))
 
 fprintf(['\nThe difference in the IWB result is because it restricts the amount of the' ...

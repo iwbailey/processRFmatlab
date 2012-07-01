@@ -1,8 +1,6 @@
+function testRotation
 %
 % Simple test of rotation function
-clear
-addpath ../  % add paths below
-addpath ../../plotFunctions/
 
 % make a three component seismogram
 dt=1;

@@ -1,13 +1,6 @@
 function test_iter
 % test my iterative decon code
 
-clear;
-format compact;
-
-addpath '../'  % decon functions
-addpath '../../sigprocFunctions/'
-addpath '../../ioFunctions/'
-
 % read data
 [t,zseis,hdrZ]=sac2mat('test_data/lac_sp.z');
 [t,rseis,hdrR]=sac2mat('test_data/lac_sp.r');

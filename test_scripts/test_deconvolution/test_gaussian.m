@@ -2,12 +2,6 @@ function test_gaussian()
 % check the f0 and frequencies and ulsewidths matcha up
 % from itself
 %
-format compact;
-if( nargin < 1 ), isprompt = false; end
-  
-addpath '../'  % decon functions
-addpath '../../sigprocFunctions/'
-addpath '../../plotFunctions/'
 
 % set constant arguments
 dt = 0.1;

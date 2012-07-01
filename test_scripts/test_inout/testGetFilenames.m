@@ -1,8 +1,5 @@
 % Script to test the reading and plotting of data
-
-clear
-format compact
-addpath ../
+function testGetFilenames
 
 dir='./test_data/';
 suffix='BHZ';
@@ -20,3 +17,4 @@ for i = 1:numel(files),
 end
 
 fprintf('Done\n')
+end

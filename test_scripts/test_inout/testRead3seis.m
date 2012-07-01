@@ -1,8 +1,5 @@
 % Script to test the reading 3 components simultaneously  and plotting of data
-
-format compact
-addpath ../
-addpath ../../plotFunctions/
+function testRead3seis
 
 fprintf('\nReading Little Endian Files...\n');
 prefix='test_data/TA.O23A.little'  % prefix of for 3 components to open

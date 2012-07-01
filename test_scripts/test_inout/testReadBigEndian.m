@@ -1,8 +1,5 @@
 % Script to test the reading and plotting of data
-
-format compact
-addpath ../
-addpath ../../plotFunctions/
+function testReadBigEndian
 
 fprintf('\nTesting Big Endian Files...\n');
 prefix='test_data/TA.O23A.big'  % prefix of for 3 components to open

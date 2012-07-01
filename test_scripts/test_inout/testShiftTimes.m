@@ -1,8 +1,5 @@
 % Script to test the reading and plotting of data
-clear
-format compact
-addpath ../
-addpath ../../plotFunctions/
+function testShiftTimes
 
 fprintf('\nTesting Little Endian Files...\n');
 prefix='test_data/TA.O23A.little'  % prefix of for 3 components to open

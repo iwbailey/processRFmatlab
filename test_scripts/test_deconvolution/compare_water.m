@@ -1,12 +1,6 @@
 function compare_water
 %
 % compare the water level deconvolution methods using the example in Ammon's code
-format compact;
-
-addpath '../'  % decon functions
-addpath '../../ioFunctions/' % for file in 
-addpath '../../plotFunctions/' % for plotting input data 
-addpath '../../sigprocFunctions/' % for plotting input data 
 
 % read data
 [Zin,hdrZ]=sacsun2mat('test_data/uln_1995_113_b_057_d_045.z');
@@ -54,19 +48,6 @@ end
 timeTakenFor100 = cputime-t
 
 
-%--------------------
-% levander method
-fprintf('\nLevander method\n')
-wvt = 0;%wavelet = 0 for Gaussian, 1 for Ricker wavelet
-[rf2,tmp] = makeRFwater_levander( rseis, zseis, -tdel, dt, nt, wlevel, f0, wvt, true);
-
-t=cputime;
-for i=1:1e3,
-  makeRFwater_levander( rseis, zseis, -tdel, dt, nt, wlevel, f0, wvt, false);
-end
-timeTakenFor100 = cputime-t
-
-fprintf('RMS: %.2f\n', tmp)
 
 %--------------------
 % Adjusted Ammon method
@@ -85,16 +66,13 @@ fprintf('RMS: %.2f\n', rms)
 % plot results
 clf;
 h1 = plot(time,rf1,'k'); hold on;
-h2 = plot(time,rf2,'--m'); hold on;
 h3 = plot(time,rf3,'--c'); hold on;
 
-legend([ h1, h2, h3 ], ...
+legend([ h1, h3 ], ...
        'Ammon method',...
-       'Levander method',...
        'Adjusted Ammon method')
 
 disp('The difference in the result is because the ammon method uses more of the signal')
-disp('Levander sets anything that could wraparound to zero.')
 disp('Adjusted ammon method pads with extra zeros to avoid wraparound.')
 
 axis tight

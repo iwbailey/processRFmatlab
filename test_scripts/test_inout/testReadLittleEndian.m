@@ -1,8 +1,5 @@
+function testReadLittleEndian
 % Script to test the reading and plotting of data
-
-format compact
-addpath ../
-addpath ../../plotFunctions/
 
 fprintf('\nTesting Little Endian Files...\n');
 prefix='test_data/TA.O23A.little'  % prefix of for 3 components to open

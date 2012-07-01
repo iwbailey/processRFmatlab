@@ -1,8 +1,5 @@
+function testCombineHeaders
 % Script to test the reading and plotting of data
-
-format compact
-addpath ../
-addpath ../../plotFunctions/
 
 fprintf('\nReading Little Endian Files...\n');
 prefix='test_data/TA.O23A.little'  % prefix of for 3 components to open
@@ -38,4 +35,5 @@ isPlot = true;
 					     ehdr, eseis, ...
 					     nhdr, nseis, isPlot );
 
-hdr
+disp(hdr)
+end

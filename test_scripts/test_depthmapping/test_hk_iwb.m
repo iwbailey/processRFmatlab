@@ -1,14 +1,6 @@
 function test_hk_iwb
 %
 % test the matlab h-k stacking using the same example as given by Zhu with his codes
-clear;
-format compact;
-
-addpath '../'  % depth functions
-addpath '../../sigprocFunctions/'
-addpath '../../ioFunctions/'
-addpath '../../plotFunctions/'
-
 
 % Parameters used in example
 h=20:0.5:60;
@@ -24,7 +16,7 @@ t0 = t(1);
 dt = t(2)-t(1);
 
 % do the hk stacking
-[stack, stackvar ] = hkstack_iwb( rfdata, t0, dt, p, h, kappa, vp, false);
+[stack, stackvar ] = hkstack_iwb( rfdata, t0, dt, p, h, kappa, vp );
 
 % combine the stacks 
 allstack = w(1)*stack(:,:,1) + w(2)*stack(:,:,2) + w(3)*stack(:,:,3);

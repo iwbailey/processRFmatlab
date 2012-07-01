@@ -1,13 +1,6 @@
 function test_hk
 %
 % test the matlab h-k stacking using the same example as given by Zhu with his codes
-clear;
-format compact;
-
-addpath '../'  % depth functions
-addpath '../../sigprocFunctions/'
-addpath '../../ioFunctions/'
-
 
 % Parameters used in example
 h=20:0.5:60;

@@ -1,12 +1,6 @@
 function testDamp
 %
 % test different damping levels for the damped method
-format compact;
-
-addpath '../'  % decon functions
-addpath '../../ioFunctions/' % for file in 
-addpath '../../plotFunctions/' % for plotting input data 
-addpath '../../sigprocFunctions/' % for plotting input data 
 
 % read data
 [Zin,hdrZ]=sacsun2mat('test_data/uln_1995_113_b_057_d_045.z');
