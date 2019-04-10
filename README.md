@@ -3,6 +3,8 @@ processRFmatlab
 
 MATLAB functions and scripts for working with receiver functions
 
+These codes are pretty old. I no longer have MATLAB so I'm setting the repository to archive.
+
 These are functions I wrote during my post doc at USC (2009-2011) to
 work with receiver function data.  It is not any formal program, but
 the codes are made available in case they might be useful for learning
